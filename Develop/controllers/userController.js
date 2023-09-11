@@ -1,66 +1,60 @@
-// ObjectId() method for converting studentId string into an ObjectId for querying database
 const { ObjectId } = require('mongoose').Types;
-const { Student, Course } = require('../models');
+const { User, Thought } = require("../models");
 
-// TODO: Create an aggregate function to get the number of students overall
+// Aggregate function to get the number of students overall
 const headCount = async () => {
-  // Your code here
-  const numberOfStudents = await Student.aggregate();
+  const numberOfStudents = await Student.aggregate()
+    .count('studentCount');
   return numberOfStudents;
 }
 
-// Execute the aggregate method on the Student model and calculate the overall grade by using the $avg operator
+// Aggregate function for getting the overall grade using $avg
 const grade = async (studentId) =>
   Student.aggregate([
-    // TODO: Ensure we include only the student who can match the given ObjectId using the $match operator
-    {
-      // Your code here
-    },
+    // only include the given student by using $match
+    { $match: { _id: new ObjectId(studentId) } },
     {
       $unwind: '$assignments',
     },
-    // TODO: Group information for the student with the given ObjectId alongside an overall grade calculated using the $avg operator
     {
-      // Your code here
+      $group: {
+        _id: new ObjectId(studentId),
+        overallGrade: { $avg: '$assignments.score' },
+      },
     },
   ]);
 
 module.exports = {
   // Get all students
-  async getStudents(req, res) {
+  async getUsers(req, res) {
     try {
-      const students = await Student.find();
-      const studentObj = {
-        students,
-        headCount: await headCount(),
-      };
-      return res.json(studentObj);
+      const users = await User.find()
+
+      .then((users) => res.json(users))
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
     }
   },
-  // Get a single student
-  async getSingleStudent(req, res) {
+  // Get a single user
+  async getSingleUser(req, res) {
     try {
-      const student = await Student.findOne({ _id: req.params.studentId })
+      User.findOne({ _id: req.params.userId })
         .select('-__v')
-        .lean();
+        .populate("thoughts")
+        .populate("friends")
 
-      if (!student) {
-        return res.status(404).json({ message: 'No student with that ID' });
+      if (!user) {
+        return res.status(404).json({ message: 'No user with that ID' })
       }
 
-      res.json({
-        student,
-        grade: await grade(req.params.studentId),
-      });
+      res.json(user);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
     }
   },
-  // create a new student
+  // create a new stu
   async createStudent(req, res) {
     try {
       const student = await Student.create(req.body);
@@ -75,7 +69,7 @@ module.exports = {
       const student = await Student.findOneAndRemove({ _id: req.params.studentId });
 
       if (!student) {
-        return res.status(404).json({ message: 'No such student exists' })
+        return res.status(404).json({ message: 'No such student exists' });
       }
 
       const course = await Course.findOneAndUpdate(
@@ -99,9 +93,10 @@ module.exports = {
 
   // Add an assignment to a student
   async addAssignment(req, res) {
+    console.log('You are adding an assignment');
+    console.log(req.body);
+
     try {
-      console.log('You are adding an assignment');
-      console.log(req.body);
       const student = await Student.findOneAndUpdate(
         { _id: req.params.studentId },
         { $addToSet: { assignments: req.body } },
@@ -111,7 +106,7 @@ module.exports = {
       if (!student) {
         return res
           .status(404)
-          .json({ message: 'No student found with that ID :(' })
+          .json({ message: 'No student found with that ID :(' });
       }
 
       res.json(student);
@@ -140,3 +135,4 @@ module.exports = {
     }
   },
 };
+
