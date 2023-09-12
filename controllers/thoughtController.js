@@ -1,10 +1,11 @@
-const { User,Thought } = require('../models')
+const { User,Thought } = require('../models');
+const thought = require("../models/thought");
 
 module.exports = {
   // Get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = await Thought.find()
+      Thought.find()
       res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
@@ -13,7 +14,7 @@ module.exports = {
   // Get a thought
   async getSingleThoughts(req, res) {
     try {
-      const thought = await Thought.findOne({ _id: req.params.thoughtId })
+      Thought.findOne({ _id: req.params.thoughtId })
         .select('-__v');
 
       if (!thought) {
@@ -79,4 +80,41 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  // remove a reaction from a thought
+  async removeReaction(req, res) {
+    try {
+      Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        {  $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { new: true }
+      );
+
+      if (!thought) {
+        return res.status(404).json({ message: 'No thought with this id!' });
+      }
+
+      res.json(course);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  // add a reaction to thought
+  async addReaction(req, res) {
+    try {
+      Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $push: { reactions: req.body } },
+        { runValidators: true, new: true }
+      );
+
+      if (!thought) {
+        return res.status(404).json({ message: 'No thought with this id!' });
+      }
+
+      res.json(course);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
 };
