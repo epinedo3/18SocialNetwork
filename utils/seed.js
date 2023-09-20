@@ -29,7 +29,7 @@ connection.once('open', async () => {
   }
 
   // Insert users into the database
-  await User.collection.insertMany(users);
+  const createdUsers = await User.collection.insertMany(users);
 
   // Create empty array to hold the thoughts
   const thoughts = [];
