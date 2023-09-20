@@ -12,7 +12,8 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      // must match a valid email address
+      match: [/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
+        "Please use a valid email address"],
     },
   
     friends:  [

@@ -35,7 +35,7 @@ module.exports = {
   async createUser(req, res) {
     try {
       User.create(req.body);
-      res.json(student);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -96,7 +96,7 @@ module.exports = {
           .json({ message: 'No user found with that ID :(' });
       }
 
-      res.json(student);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }

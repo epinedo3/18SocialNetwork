@@ -21,7 +21,7 @@ module.exports = {
         return res.status(404).json({ message: 'No thought with that ID' });
       }
 
-      res.json(course);
+      res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -42,7 +42,7 @@ module.exports = {
         return res.status(404).json({ message: 'No thought with that ID' });
       }
 
-      res.json(course);
+      res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -52,7 +52,7 @@ module.exports = {
     try {
       Thought.findOneAndDelete({ _id: req.params.thoughtId });
 
-      if (!course) {
+      if (!thoughts) {
         return res.status(404).json({ message: 'No thought with that ID' });
       }
 
@@ -75,7 +75,7 @@ module.exports = {
         return res.status(404).json({ message: 'No thought with this id!' });
       }
 
-      res.json(course);
+      res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -93,7 +93,7 @@ module.exports = {
         return res.status(404).json({ message: 'No thought with this id!' });
       }
 
-      res.json(course);
+      res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -111,7 +111,7 @@ module.exports = {
         return res.status(404).json({ message: 'No thought with this id!' });
       }
 
-      res.json(course);
+      res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
     }
